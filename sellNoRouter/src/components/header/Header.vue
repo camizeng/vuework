@@ -17,32 +17,97 @@
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div v-if="seller.supports" class="support-count">
+      <div v-if="seller.supports" class="support-count" @click="showDetail">
         <span class="count">{{seller.supports.length}}个</span>
         <i class="icon-keyboard_arrow_right"></i>
       </div>
     </div>
     <!-- 公告 -->
-    <div class="bulletin-wrapper">
+    <div class="bulletin-wrapper" @click="showDetail">
       <span class="bulletin-icon"></span><span class="bulletin-text">{{seller.bulletin}}</span>
       <i class="icon-keyboard_arrow_right"></i>
     </div>
+    <!-- 背景图片 -->
     <div class="background">
       <img :src="seller.avatar" width="100%" height="100%">
     </div>
+
+    <!-- 弹出评价层 -->
+    <transition name="fade" enter-active-class="fade-enter-active">
+      <div v-show="detailShow" class="detail">
+        <div class="detail-wrapper clearfix">
+          <div class="detail-main">
+            <h1 class="name">{{seller.name}}</h1>
+            <!-- 星 -->
+            <div class="star-wrapper">
+              <star :size="48" :score="seller.score"></star>
+            </div>
+
+            <!-- topic 1-->
+            <topic :topicname="'优惠信息'"></topic>
+
+            <ul v-if="seller.supports" class="supports">
+              <li class="support-item" v-for="item in seller.supports" :key="item.id">
+                <span class="icon" :class="classMap[item.type]"></span>
+                <span class="text">{{item.description}}</span>
+              </li>
+            </ul>
+            <!-- topic 2-->
+            <topic :topicname="'商家公告'"></topic>
+
+            <!-- bulletin -->
+            <div class="bulletin">
+              <p class="content">{{seller.bulletin}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-close" @click="hideDetail">×</div>
+      </div>
+    </transition>
+
+    <!-- flex 弹层布局 for test-->
+    <!--<div class="detail-flex">
+      <div class="detail-main">
+        <p>{{seller.bulletin}}</p>
+        <p>{{seller.bulletin}}</p>
+        <p>{{seller.bulletin}}</p>
+        &lt;!&ndash;<p>{{seller.bulletin}}</p>
+        <p>{{seller.bulletin}}</p>
+        <p>{{seller.bulletin}}</p>&ndash;&gt;
+      </div>
+      <footer>×</footer>
+    </div>-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import star from 'components/star/star';
+  import topic from 'components/topic/topic';
+
   export default {
+    data() {
+      return {
+        detailShow: false
+      };
+    },
     props: {
       seller: {
         type: Object
       }
     },
+    methods: {
+      showDetail: function() {
+         console.log(this.detailShow);
+        this.detailShow = true;
+      },
+      hideDetail: function() {
+        this.detailShow = false;
+      }
+    },
     created() {
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-    }
+    },
+    components: {'star': star, 'topic': topic}
   };
 </script>
 
@@ -53,7 +118,7 @@
     position: relative
     overflow: hidden
     color: #fff
-    background: rgba(7,17,27,0.5)
+    background: rgba(7, 17, 27, 0.5)
     .content-warpper
       position: relative
       padding: 24px 12px 18px 24px
@@ -115,7 +180,7 @@
         height: 24px
         line-height: 24px
         border-radius: 14px
-        background: rgba(0,0,0,0.2)
+        background: rgba(0, 0, 0, 0.2)
         text-align: center
         .count
           vertical-align: top
@@ -133,13 +198,13 @@
       overflow: hidden
       text-overflow: ellipsis
       font-size: 10px
-      background: rgba(0,0,0,0.2)
+      background: rgba(0, 0, 0, 0.2)
       .bulletin-icon
         vertical-align top
         display: inline-block
-        margin-top:9px
+        margin-top: 9px
         width: 22px
-        height:12px
+        height: 12px
         bg-image('bulletin')
         background-size 22px 12px
         background-repeat: no-repeat
@@ -150,10 +215,9 @@
         height: 12px;
       .icon-keyboard_arrow_right
         position: absolute
-        right:10px
+        right: 10px
         top: 10px
-        font-size:10px
-
+        font-size: 10px
     .background
       position: absolute
       top: 0
@@ -162,4 +226,96 @@
       height: 100%
       z-index: -1
       filter: blur(10px)
+    .detail
+      position: fixed
+      z-index: 100
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      overflow: auto
+      transition: all 0.5s
+      backdrop-filter: blur(10)
+      background: rgba(7, 17, 27, 0.8)
+      .detail-wrapper
+        min-height: 100%
+        width:100%
+        .detail-main
+          padding: 64px 0
+          .name
+            line-height: 16px
+            text-align: center
+            font-size: 16px
+            font-weight: 700
+          .star-wrapper
+            margin-top: 18px
+            padding: 2px 0
+            text-align: center
+          .supports
+            width: 80%
+            margin: 0 auto
+            .support-item
+              padding: 0 12px
+              margin-bottom: 12px
+              font-size: 0
+              &:last-child
+                margin-botton: 0
+              .icon
+                display: inline-block
+                width: 16px
+                height: 16px
+                vertical-align: top
+                margin-right: 6px
+                background-size: 16px 16px
+                background-repeat: no-repeat
+                &.decrease
+                  bg-image('decrease_2')
+                &.discount
+                  bg-image('discount_2')
+                &.invoice
+                  bg-image('invoice_2')
+                &.guarantee
+                  bg-image('guarantee_2')
+                &.special
+                  bg-image('special_2')
+              .text
+                line-height: 16px
+                font-size: 12px
+          .bulletin
+            width: 80%
+            margin: 0 auto
+            .content
+              padding: 0 12px
+              line-height: 24px
+              font-size: 12px
+      .detail-close
+        position: relative
+        width: 32px
+        height: 32px
+        margin: -64px auto 0 auto
+        clear: both
+        font-size: 32px
+    .fade-enter-active, .fade-leave-active {
+      opacity: 1
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+      opacity: 0
+     /* background: rgba(7, 17, 27, 0)*/
+    }
+    .detail-flex
+      position:fixed
+      top: 0
+      left: 0
+      display: flex
+      flex-flow: column
+      min-height: 100%
+      overflow: auto
+      background: rgba(0,0,0,0.4)
+      .detail-main
+        flex: 1
+        padding-top:64px
+      footer
+        text-align: center
+        font-size: 32px;
+        padding: 10px 0
 </style>
