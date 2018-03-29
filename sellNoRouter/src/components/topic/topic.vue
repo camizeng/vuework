@@ -1,5 +1,5 @@
 <template>
-  <div class="title">
+  <div class="topictitle">
     <div class="line"></div>
     <div class="text" v-text="topicname"></div>
     <div class="line"></div>
@@ -17,7 +17,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  .title
+  .topictitle
     display: flex
     width: 80%
     margin: 20px auto 24px auto

@@ -13,7 +13,8 @@
           {{seller.description}}/{{seller.deliveryTime}}分钟送达
         </div>
         <div v-if="seller.supports" class="support">
-          <span class="icon" :class="classMap[seller.supports[0].type]"></span>
+          <!--<span class="icon" :class="classMap[seller.supports[0].type]"></span>-->
+          <supporticon :type="seller.supports[0].type" :size="1"></supporticon>
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
@@ -48,7 +49,8 @@
 
             <ul v-if="seller.supports" class="supports">
               <li class="support-item" v-for="item in seller.supports" :key="item.id">
-                <span class="icon" :class="classMap[item.type]"></span>
+                <!--<span class="icon" :class="classMap[item.type]"></span>-->
+                <supporticon :type="item.type" :size="2"></supporticon>
                 <span class="text">{{item.description}}</span>
               </li>
             </ul>
@@ -58,6 +60,8 @@
             <!-- bulletin -->
             <div class="bulletin">
               <p class="content">{{seller.bulletin}}</p>
+              <p class="content">{{seller.bulletin}}</p>
+              <p class="content">{{seller.bulletin}}</p>
             </div>
           </div>
         </div>
@@ -66,23 +70,20 @@
     </transition>
 
     <!-- flex 弹层布局 for test-->
-    <!--<div class="detail-flex">
-      <div class="detail-main">
+   <!-- <div class="detail-flex" v-show="detailShow">
+      <div class="detail-main" >
         <p>{{seller.bulletin}}</p>
-        <p>{{seller.bulletin}}</p>
-        <p>{{seller.bulletin}}</p>
-        &lt;!&ndash;<p>{{seller.bulletin}}</p>
-        <p>{{seller.bulletin}}</p>
-        <p>{{seller.bulletin}}</p>&ndash;&gt;
       </div>
-      <footer>×</footer>
+      <div class="footer">×</div>
     </div>-->
+
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import star from 'components/star/star';
   import topic from 'components/topic/topic';
+  import supporticon from 'components/support/supporticon';
 
   export default {
     data() {
@@ -104,10 +105,10 @@
         this.detailShow = false;
       }
     },
-    created() {
-      this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-    },
-    components: {'star': star, 'topic': topic}
+    // /* created() {
+    //    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+    //  },*/
+    components: {star, topic, supporticon}
   };
 </script>
 
@@ -151,7 +152,7 @@
           line-height: 12px
           font-size: 12px
         .support
-          .icon
+          /*.icon
             display: inline-block
             vertical-align: top
             width: 12px
@@ -168,7 +169,7 @@
             &.guarantee
               bg-image('guarantee_1')
             &.special
-              bg-image('special_1')
+              bg-image('special_1')*/
           .text
             line-height: 12px
             font-size: 10px
@@ -241,7 +242,7 @@
         min-height: 100%
         width:100%
         .detail-main
-          padding: 64px 0
+          padding: 44px 0
           .name
             line-height: 16px
             text-align: center
@@ -260,7 +261,7 @@
               font-size: 0
               &:last-child
                 margin-botton: 0
-              .icon
+              /*.icon
                 display: inline-block
                 width: 16px
                 height: 16px
@@ -277,7 +278,7 @@
                 &.guarantee
                   bg-image('guarantee_2')
                 &.special
-                  bg-image('special_2')
+                  bg-image('special_2')*/
               .text
                 line-height: 16px
                 font-size: 12px
@@ -292,7 +293,7 @@
         position: relative
         width: 32px
         height: 32px
-        margin: -64px auto 0 auto
+        margin: -40px auto 0 auto
         clear: both
         font-size: 32px
     .fade-enter-active, .fade-leave-active {
@@ -308,14 +309,16 @@
       left: 0
       display: flex
       flex-flow: column
-      min-height: 100%
       overflow: auto
       background: rgba(0,0,0,0.4)
+      height: 100%
       .detail-main
+        min-height: 100%
         flex: 1
-        padding-top:64px
-      footer
+        padding:44px 8px
+      .footer
+        flex: 0 1 auto
         text-align: center
         font-size: 32px;
-        padding: 10px 0
+        padding: 0 6px
 </style>

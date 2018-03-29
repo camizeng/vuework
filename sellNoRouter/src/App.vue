@@ -25,11 +25,11 @@
     created() {
       this.$http.get('/api/seller').then((response) => {
         response = response.body;
-        console.log('response', response);
+        // console.log('App-response', response);
 
         if (response.errno === ERR_OK) {
           this.seller = response.data;
-          console.log('seller', this.seller);
+          // console.log('App-seller', this.seller);
         }
       });
     },
