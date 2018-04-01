@@ -34,6 +34,9 @@
         </li>
       </ul>
     </div>
+
+    <!-- 购物车 delivery-price:配送费; min-price:起送费 -->
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 
 </template>
@@ -41,6 +44,7 @@
 <script type="text/ecmascript-6">
   import supporticon from 'components/support/supporticon';
   import BScroll from 'better-scroll';
+  import shopcart from 'components/shopcart/shopcart';
 
   const ERR_OK = 0;
   export default {
@@ -69,6 +73,8 @@
       }
     },
     created() {
+      console.log('--create');
+      console.log('seller', this.seller);
       this.$http.get('api/goods').then((response) => {
         response = response.body;
         // console.log('Goods-response', response);
@@ -82,13 +88,13 @@
         }
       });
     },
-    components: {supporticon},
+    components: {supporticon, shopcart},
     methods: {
       selectMenu: function(index, e) {
         console.log(e);
-        // if (e._constructed) { // better-scroll 派发事件，才有此属性.规避重复事件
-        //   return;
-        // }
+        if (!e._constructed) { // better-scroll 派发事件，才有此属性.取非则表示是原生clieck事件，规避重复事件
+          return;
+        }
         console.log('index', index);
         let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
         let el = foodList[index];
