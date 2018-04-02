@@ -28,6 +28,9 @@
                   <span class="now">￥{{food.price}}</span>
                   <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol @add="addFood" :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
@@ -36,7 +39,7 @@
     </div>
 
     <!-- 购物车 delivery-price:配送费; min-price:起送费 -->
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 
 </template>
@@ -45,6 +48,7 @@
   import supporticon from 'components/support/supporticon';
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
+  import cartcontrol from 'components/cartcontrol/cartcontrol';
 
   const ERR_OK = 0;
   export default {
@@ -70,6 +74,17 @@
           }
         }
         return 0;
+      },
+      selectFoods() {
+        let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        return foods;
       }
     },
     created() {
@@ -81,15 +96,22 @@
         if (response.errno === ERR_OK) {
           this.goods = response.data;
           // console.log('goods', this.goods);
-           this.$nextTick(() => {
+          this.$nextTick(() => {
             this._initScroll();
             this._calculateHeight();
-           });
+          });
         }
       });
     },
-    components: {supporticon, shopcart},
+    components: {supporticon, shopcart, cartcontrol},
     methods: {
+      addFood: function(target) {
+        this._drop(target);
+      },
+      _drop: function(target) {
+        // 访问子组件，先在子组件标签上加 ref ,再用this.$refs.**取
+        this.$refs.shopcart.drop(target);
+      },
       selectMenu: function(index, e) {
         console.log(e);
         if (!e._constructed) { // better-scroll 派发事件，才有此属性.取非则表示是原生clieck事件，规避重复事件
@@ -106,7 +128,8 @@
           click: true
         });
         this.foodScroll = new BScroll(this.$refs.foodsWrapper, {
-          probeType: 3 // 时实监测到滚动位置
+          probeType: 3, // 时实监测到滚动位置
+          click: true
         });
         this.foodScroll.on('scroll', (pos) => {
           this.scrollY = Math.abs(Math.round(pos.y));
@@ -211,4 +234,8 @@
               text-decoration: line-through
               font-size: 10px
               color: rgb(147,153,159)
+          .cartcontrol-wrapper
+            position: absolute
+            right:0
+            bottom:8px
 </style>
