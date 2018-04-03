@@ -25,7 +25,7 @@
     <!-- 小球动画 -->
     <div class="ball-conteiner">
       <div v-for="ball in balls" :key="ball.id">
-        <transition name="drop">
+        <transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
           <div  class="ball" v-show="ball.show">
             <div class="inner inner-hook"></div>
           </div>
@@ -107,7 +107,7 @@
     },
     methods: {
       drop(el) {
-         console.log(el);
+        // console.log(el);
         for (let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
           if (!ball.show) {
@@ -117,47 +117,49 @@
             return;
           }
         }
-      }
-    },
-    transitions: {
-      drop: {
-        beforeEnter(el) {
-          let count = this.balls.length;
-          while (count--) {
-            let ball = this.balls[count];
-            if (ball.show) {
-              // 浏览器接口，返回视口位置
-              let rect = ball.el.getBoundingClientRect();
-              console.log(rect);
-              let x = rect.left - 32;
-              let y = -(window.innerHeight - rect.top - 22);
-              el.style.display = '';
-              el.style.webkitTransform = `translate3d(0,${y}px,0)`;
-              el.style.transform = `translate3d(0,${y}px,0)`;
-              let inner = el.getElementByClassName('inner-hook')[0];
-              inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
-              inner.style.transform = `translate3d(${x}px,0,0)`;
-            }
+      },
+      beforeDrop(el) {
+        console.log('before-enter');
+        let count = this.balls.length;
+        while (count--) {
+          let ball = this.balls[count];
+          if (ball.show) {
+            // 浏览器接口，返回视口位置
+            let rect = ball.el.getBoundingClientRect();
+            console.log(rect);
+            let x = rect.left - 32;
+            let y = -(window.innerHeight - rect.top - 22);
+            el.style.display = '';
+            el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+            el.style.transform = `translate3d(0,${y}px,0)`;
+            let inner = el.getElementsByClassName('inner-hook')[0];
+            inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+            inner.style.transform = `translate3d(${x}px,0,0)`;
           }
-        },
-        enter(el) {
-          //  触发浏览器重绘
-          /* eslint-disable */
-          let rf = el.offsetHeight;
-          this.$nextTick(() => {
-            el.style.webkitTransform = 'translate3d(0,0,0)';
-            el.style.transform = 'translate3d(0,0,0)';
-            let inner = el.getElementByClassName('inner-hook')[0];
-            inner.style.webkitTransform = 'translate3d(0,0,0)';
-            inner.style.transform = 'translate3d(0,0,0)';
-          })
-        },
-        afterEnter(el) {
-          let ball = this.dropBalls.shift();
-          if (ball) {
-            ball.show = false;
-            el.style.display = 'none';
-          }
+        }
+      },
+      dropping(el, done) {
+        console.log('enter--');
+        console.log('el', el);
+        console.log(done);
+        //  触发浏览器重绘
+        /* eslint-disable */
+        let rf = el.offsetHeight;
+        this.$nextTick(() => {
+          el.style.webkitTransform = 'translate3d(0,0,0)';
+          el.style.transform = 'translate3d(0,0,0)';
+          let inner = el.getElementsByClassName('inner-hook')[0];
+          inner.style.webkitTransform = 'translate3d(0,0,0)';
+          inner.style.transform = 'translate3d(0,0,0)';
+          el.addEventListener('transitionend', done);
+        });
+      },
+      afterDrop(el) {
+        console.log('enter-leave');
+        let ball = this.dropBalls.shift();
+        if (ball) {
+          ball.show = false;
+          el.style.display = 'none';
         }
       }
     }

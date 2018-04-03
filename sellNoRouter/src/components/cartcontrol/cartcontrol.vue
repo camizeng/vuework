@@ -19,9 +19,6 @@
         type: Object
       }
     },
-    created() {
-      // console.log(this.food);
-    },
     methods: {
       decrease(event) {
         if (!event._constructed) {
