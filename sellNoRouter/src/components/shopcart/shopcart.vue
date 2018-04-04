@@ -23,10 +23,10 @@
       </div>
     </div>
     <!-- 小球动画 -->
-    <div class="ball-conteiner">
+    <div class="ball-container">
       <div v-for="ball in balls" :key="ball.id">
         <transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
-          <div  class="ball" v-show="ball.show">
+          <div class="ball" v-show="ball.show">
             <div class="inner inner-hook"></div>
           </div>
         </transition>
@@ -108,12 +108,15 @@
     methods: {
       drop(el) {
         // console.log(el);
+        // console.log('balls', this.balls);
         for (let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
+          console.log('ball' + i, ball.show);
           if (!ball.show) {
             ball.show = true;
             ball.el = el;
             this.dropBalls.push(ball);
+           // console.log(this.balls.toString());
             return;
           }
         }
@@ -121,15 +124,18 @@
       beforeDrop(el) {
         console.log('before-enter');
         let count = this.balls.length;
+       // console.log(count);
         while (count--) {
+         // console.log(count);
           let ball = this.balls[count];
+          console.log('beforeDrop-show', ball.show);
           if (ball.show) {
             // 浏览器接口，返回视口位置
             let rect = ball.el.getBoundingClientRect();
             console.log(rect);
             let x = rect.left - 32;
             let y = -(window.innerHeight - rect.top - 22);
-            el.style.display = '';
+            el.style.display = 'inline-block';
             el.style.webkitTransform = `translate3d(0,${y}px,0)`;
             el.style.transform = `translate3d(0,${y}px,0)`;
             let inner = el.getElementsByClassName('inner-hook')[0];
@@ -157,6 +163,7 @@
       afterDrop(el) {
         console.log('enter-leave');
         let ball = this.dropBalls.shift();
+        console.log(ball.show);
         if (ball) {
           ball.show = false;
           el.style.display = 'none';
