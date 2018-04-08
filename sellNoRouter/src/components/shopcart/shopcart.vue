@@ -50,7 +50,7 @@
                   <span>￥{{food.price*food.count}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food"></cartcontrol>
+                  <cartcontrol :food="food" @add="addFood"></cartcontrol>
                 </div>
               </li>
             </ul>
@@ -163,7 +163,7 @@
     },
     methods: {
       drop(el) {
-        // console.log(el);
+         console.log('shopcar.vuet-drop', el);
         // console.log('balls', this.balls);
         for (let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
@@ -200,6 +200,9 @@
         window.alert(`总共需支付:${this.totalPrice} 元`);
 
       },
+      addFood(target) {
+        this.drop(target);
+      },
       beforeDrop(el) {
         console.log('before-enter');
         let count = this.balls.length;
@@ -209,7 +212,7 @@
           let ball = this.balls[count];
           console.log('beforeDrop-show', ball.show);
           if (ball.show) {
-            // 浏览器接口，返回视口位置
+            // 浏览器接口，返回视口位置.getBoundingClientRect-获取当前点击对象对屏幕的位置
             let rect = ball.el.getBoundingClientRect();
             console.log(rect);
             let x = rect.left - 32;

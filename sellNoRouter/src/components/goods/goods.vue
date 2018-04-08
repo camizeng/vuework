@@ -1,47 +1,49 @@
 <template>
-  <div class="goods">
-    <!-- 左侧菜单 -->
-    <div class="menu-wrapper" ref="menuWrapper">
-      <ul>
-        <li v-for="(item,index) in goods" :key="item.id" class="menu-item border-1px"
-            :class="{'current':currentIndex===index}"  @click="selectMenu(index, $event)">
-          <span class="text"><supporticon :type="item.type" :size="3"></supporticon>{{item.name}}</span>
-        </li>
-      </ul>
-    </div>
-    <!-- 右侧商品 -->
-    <div class="foods-wrapper" ref="foodsWrapper">
-      <ul>
-        <li v-for="item in goods" :key="item.id" class="foodlist food-list-hook">
-          <h1 class="title">{{item.name}}</h1>
-          <ul>
-            <li v-for="food in item.foods" :key="food.id" class="food-item">
-              <div class="icon"><img :src="food.icon" width="57"></div>
-              <div class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <p class="desc">{{food.description}}</p>
-                <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span>
-                  <span>好评率{{food.rating}}%</span>
+  <div>
+    <div class="goods">
+      <!-- 左侧菜单 -->
+      <div class="menu-wrapper" ref="menuWrapper">
+        <ul>
+          <li v-for="(item,index) in goods" :key="item.id" class="menu-item border-1px"
+              :class="{'current':currentIndex===index}"  @click="selectMenu(index, $event)">
+            <span class="text"><supporticon :type="item.type" :size="3"></supporticon>{{item.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <!-- 右侧商品 -->
+      <div class="foods-wrapper" ref="foodsWrapper">
+        <ul>
+          <li v-for="item in goods" :key="item.id" class="foodlist food-list-hook">
+            <h1 class="title">{{item.name}}</h1>
+            <ul>
+              <li @click="selectFood(food,$event)" v-for="food in item.foods" :key="food.id" class="food-item">
+                <div class="icon"><img :src="food.icon" width="57"></div>
+                <div class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc">{{food.description}}</p>
+                  <div class="extra">
+                    <span class="count">月售{{food.sellCount}}份</span>
+                    <span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <span class="now">￥{{food.price}}</span>
+                    <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+                  </div>
+                  <div class="cartcontrol-wrapper">
+                    <cartcontrol @add="addFood" :food="food"></cartcontrol>
+                  </div>
                 </div>
-                <div class="price">
-                  <span class="now">￥{{food.price}}</span>
-                  <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-                </div>
-                <div class="cartcontrol-wrapper">
-                  <cartcontrol @add="addFood" :food="food"></cartcontrol>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
-    <!-- 购物车 delivery-price:配送费; min-price:起送费 -->
-    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+      <!-- 购物车 delivery-price:配送费; min-price:起送费 -->
+      <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    </div>
+    <food :food="selectedFood" ref="food" @add="addFood"></food>
   </div>
-
 </template>
 
 <script type="text/ecmascript-6">
@@ -49,6 +51,7 @@
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
   import cartcontrol from 'components/cartcontrol/cartcontrol';
+  import food from 'components/food/food';
 
   const ERR_OK = 0;
   export default {
@@ -61,7 +64,8 @@
       return {
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       };
     },
     computed: {
@@ -103,7 +107,7 @@
         }
       });
     },
-    components: {supporticon, shopcart, cartcontrol},
+    components: {supporticon, shopcart, cartcontrol, food},
     methods: {
       addFood: function(target) {
         this._drop(target);
@@ -113,7 +117,7 @@
         this.$refs.shopcart.drop(target);
       },
       selectMenu: function(index, e) {
-        console.log(e);
+        // console.log(e);
         if (!e._constructed) { // better-scroll 派发事件，才有此属性.取非则表示是原生clieck事件，规避重复事件
           return;
         }
@@ -121,6 +125,13 @@
         let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
         let el = foodList[index];
         this.foodScroll.scrollToElement(el, 300);
+      },
+      selectFood: function(food, e) {
+        if (!e._constructed) { // better-scroll 派发事件，才有此属性.取非则表示是原生clieck事件，规避重复事件
+          return;
+        }
+        this.selectedFood = food;
+        this.$refs.food.show();// 调用子组件方法
       },
       _initScroll() {
         // click 设置成可点击，实际是better-scroll派发click事件，导致在pc上会产生两个click
