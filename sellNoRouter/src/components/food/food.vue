@@ -25,7 +25,19 @@
             <div @click="addFirst" class="buy" v-show="!food.count || food.count === 0">加入购物车</div>
           </transition>
         </div>
-
+        <!-- 分割线 -->
+        <split v-show="food.info"></split>
+        <!--  商品介绍 -->
+        <div class="info" v-show="food.info">
+          <h1 class="title">商品信息</h1>
+          <p class="text">{{food.info}}</p>
+        </div>
+        <split></split>
+        <!-- 商品评价 -->
+        <div class="rating">
+          <h1 class="title">商品评价</h1>
+          <ratingselect></ratingselect>
+        </div>
       </div>
     </div>
   </transition>
@@ -34,6 +46,8 @@
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
   import cartcontrol from 'components/cartcontrol/cartcontrol';
+  import split from 'components/split/split';
+  import ratingselect from 'components/ratings/ratingselect';
   import Vue from 'vue';
 
   export default {
@@ -47,7 +61,7 @@
         showFlag: false
       };
     },
-    components: {cartcontrol},
+    components: {cartcontrol, split, ratingselect},
     methods: {
       show() { // 父组件可调用子组件，子组件不可调用父组件
         this.showFlag = true;
@@ -162,4 +176,17 @@
         opacity: 1
         &.fade-enter,&.fade-leave-active
           opacity: 0.5
+    .info
+      padding: 18px
+      .title
+        line-height: 14px
+        margin-bottom:6px
+        font-size: 14px
+        color: rbg(7,17,27)
+        font-weight: 700
+      .text
+        line-height: 24px
+        padding: 0 8px;
+        font-size: 12px
+        color: rgb(77,85,93)
 </style>
