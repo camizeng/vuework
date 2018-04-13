@@ -8,28 +8,40 @@
     </div>
     <!-- 路由出口 -->
     <!-- 路由匹配到的组件将渲染在这里 -->
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller" ></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Header from './components/header/Header';
+  import {urlParse} from './common/js/util';
 
   const ERR_OK = 0;
   export default {
     data() {
       return {
-        seller: {}
+        seller: {
+          id: (() => {
+            let queryParam = urlParse();
+            console.log('queryParam', queryParam);
+            return queryParam.id;
+          })()
+        }
       };
     },
     created() {
-      this.$http.get('/api/seller').then((response) => {
+      this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
         response = response.body;
         // console.log('App-response', response);
 
         if (response.errno === ERR_OK) {
-          this.seller = response.data;
+          // this.seller = response.data;
           // console.log('App-seller', this.seller);
+          // 给对象扩展属性
+          this.seller = Object.assign({}, this.seller, response.data);
+          console.log('seller.id=', this.seller.id);
         }
       });
     },
